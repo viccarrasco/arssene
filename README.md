@@ -1,6 +1,6 @@
 # Arssene
 
-Simple RSS solution for ruby. 
+Simple RSS solution for rails. 
 
 ## Installation
 
@@ -131,8 +131,8 @@ If you'd like to filter feeds that include the following words in the title, you
 ```ruby
 ignore = ["comment", "comments", "store", "corporate"]
 
-uri = "https://ignore-feed-website.com/rss"
-rss = Arssene::Feed.request(uri, { :ignore => ignore })
+url = "https://ignore-feed-website.com/rss"
+rss = Arssene::Feed.request(url, { :ignore => ignore })
 ```
 If Arssene finds that the feed is not relevant according to your parameters it will result in a change the 'relevant' property to false. Otherwise, by default all feeds return true for the 'relevant' property.
 
@@ -159,8 +159,8 @@ Entries will include only from the date specifed all the way up to the newest. I
 You can also specify a limit of entries that you'd like to receive for a given result.
 
 ```ruby
-uri = "https://www.kotaku.com/rss"
-rss = Arssene::Feed.request(uri, { :limit => 5 })
+url = "https://www.kotaku.com/rss"
+rss = Arssene::Feed.request(url, { :limit => 5 })
 
 feed = rss[:channel]
 
