@@ -11,6 +11,7 @@ module Arssene
         attr_accessor :copyright
         attr_accessor :entries
         attr_accessor :meta
+        attr_accessor :relevant
     end
 
     class Entry
@@ -18,21 +19,11 @@ module Arssene
         attr_accessor :link
         attr_accessor :description
         attr_accessor :content
-        attr_accessor :pubdate
+        attr_accessor :publication_date
         attr_accessor :author
-    end    
+    end
 
     class Feed
-        #   [Ping]
-        #       Will pull rss feed urls from website
-        #   
-        #   [Params in]
-        #       String/Array  * uri       = website / feed uri  
-        #
-        #   [Params out]
-        #       String        If the supplied parameter for uri was a string
-        #       Array         If the supplied parameter for uri was an array
-        #
         def self.ping(uri)
             response = []
             begin
@@ -70,21 +61,6 @@ module Arssene
             response
         end
 
-        #   [Request]
-        #       Will pull entries from a given website or feed
-        #   
-        #   [Params in]
-        #       String/Array  * uri       = website / feed uri  
-        #       
-        #       Hash          - options
-        #           Array     - :ignore   = types of feeds to be ignored  
-        #           Number    - :limit    = number of entries to retrieve
-        #           Date      - :from_date= date to start and upwards
-        #
-        #   [Params out]
-        #       String        If the supplied parameter for uri was a string
-        #       Array         If the supplied parameter for uri was an array
-        #
         def self.request(uri, options = {})
             response = []
 
@@ -94,6 +70,7 @@ module Arssene
                     if (channel.is_a?(Hash) && channel.has_key?(:error))
                         return ({:error => channel[:error]})
                     else
+                        channel = self.filter_by_options(channel, options)
                         return ({:feed => uri, :channel => channel})
                     end
                 elsif uri.is_a?(Array)
@@ -103,6 +80,7 @@ module Arssene
                             if (channel.is_a?(Hash) && channel.has_key?(:error))
                                 response.push({:error => channel[:error]})
                             else
+                                channel = self.filter_by_options(channel, options) 
                                 response.push({:feed => url, :channel => channel})
                             end
                         }.join
@@ -134,9 +112,34 @@ module Arssene
                     channel.copyright = feed.channel.copyright
                     channel.entries = extract_items feed
                     channel.meta = feed
+                    channel.relevant = true
                 end
             rescue => exception
                 return ({ :error => exception })
+            end
+            channel
+        end
+
+        def self.filter_by_options(channel, options)
+            if options.has_key?(:ignore)
+                title = channel.title.downcase.split.join
+                ignore = options[:ignore]
+                ignore = (ignore.is_a?(Array)) ? (ignore = ignore.join('|')) : ignore
+                rxp = /.?(#{ignore}).?/
+
+                channel.relevant = (rxp.match(title) == false || rxp.match(title) == nil)
+            end
+
+            if options.has_key?(:from_date)
+                if channel.entries.length > 0
+                    index = channel.entries.index {|entry| entry.publication_date == options[:from_date]}
+                    channel.entries = (index) ? channel.entries.slice(0..index) : channel.entries
+                end
+            end
+
+            if options.has_key?(:limit)
+                limit   = (options[:limit]-1)
+                channel.entries = channel.entries.slice(0..limit) if (channel.entries.length > limit)
             end
             channel
         end
@@ -148,25 +151,6 @@ module Arssene
             site.search(".//link[@type='application/rss+xml']")
         end
 
-        def self.ignore?(title, ignore = nil)
-            if ignore.nil?
-                true
-            else
-                if ignore.is_a?(String)
-                    # compare string to title with regexp and return
-                end
-
-                if ignore.is_a?(Array)
-                    if ignore.length == 0 
-                        true
-                    else
-                        # create a string with all the irrelevent symbols
-                        # compare string to title with regexp and return
-                    end
-                end
-            end            
-        end
-
         def self.extract_items(feed)
             items = []
             feed.items.each do |i|
@@ -174,7 +158,7 @@ module Arssene
                 entry.title = i.title
                 entry.link = i.link
                 entry.description = i.description
-                entry.pubdate = i.pubDate
+                entry.publication_date = i.pubDate
                 entry.author = i.author
                 if i.respond_to?("content")
                     entry.content = i.content

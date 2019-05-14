@@ -1,5 +1,4 @@
 RSpec.describe Arssene do
-
   # Has RSS
   it "should ping successfully " do
     uri = "http://www.lifehacker.com"
@@ -33,6 +32,7 @@ RSpec.describe Arssene do
   it "should request successfully" do
     uri = "https://www.lifehacker.com/rss"
     rss = Arssene::Feed.request(uri)
+    
     expect(rss.has_key?(:error)).to eq false
     expect(rss.entries.length).to be > 0    
   end
@@ -58,5 +58,51 @@ RSpec.describe Arssene do
     rss = Arssene::Feed.request(uris)
     first_channel = rss[0]
     expect(first_channel.entries.length).to be > 0
+  end
+
+  # Options (with :ignore clause)
+  it "should filter ignored websites" do
+    ignore = ["comment", "comments", "store", "corporate", "log", "advertising", "help", "support", "subscribe", "account", "membership"]
+    uri = "https://jalopnik.com/rss"
+    rss = Arssene::Feed.request(uri, { :ignore => ignore })
+    expect(rss[:channel].relevant).to eq true
+  end
+
+  it "should filter ignored websites with an array of uris" do
+    ignore = ["comment", "comments", "store", "corporate", "log", "advertising", "help", "support", "subscribe", "account", "membership"]
+    uris = ["https://jezebel.com/rss", "https://jalopnik.com/rss"]
+
+    rss = Arssene::Feed.request(uris, {:ignore => ignore})
+    expect(rss[0][:channel].relevant).to eq true
+    expect(rss[1][:channel].relevant).to eq true
+  end
+
+  it "should bring last 2 days updates" do
+    last_days = DateTime.now - 2
+    uri = "https://www.kotaku.com/rss"
+    rss = Arssene::Feed.request(uri, { :from_date => last_days })
+    expect(rss[:channel].entries.length).to be > 0
+  end
+
+  it "should bring last 2 days of updates for an array of uris" do
+    last_days = DateTime.now - 2
+
+    uris = ["https://jezebel.com/rss", "https://jalopnik.com/rss"]
+    rss = Arssene::Feed.request(uris, { :from_date => last_days })
+    expect(rss[0][:channel].entries.length).to be > 0
+    expect(rss[1][:channel].entries.length).to be > 0
+  end
+
+  it "should limit amount of entries to 5" do
+    uri = "https://www.kotaku.com/rss"
+    rss = Arssene::Feed.request(uri, { :limit => 5 })
+    expect(rss[:channel].entries.length).to eq(5)
+  end
+
+  it "should limit amount of entries to 5 for an array of uris" do
+    uris = ["https://jezebel.com/rss", "https://jalopnik.com/rss"]
+    rss = Arssene::Feed.request(uris, { :limit => 5 })
+    expect(rss[0][:channel].entries.length).to eq(5)
+    expect(rss[0][:channel].entries.length).to eq(5)
   end
 end
