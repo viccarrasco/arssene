@@ -47,7 +47,7 @@ module Arssene
                                     end                
                                 end  
                             rescue => exception
-                                response.push({:error => exception})
+                                response.push({:error => exception.to_s})
                             end  
                         }.join
                     end
@@ -89,7 +89,7 @@ module Arssene
                     []
                 end
             rescue => exception
-                response.push({:error => exception})
+                response.push({:error => exception.to_s})
             end
             response
         end
@@ -115,7 +115,7 @@ module Arssene
                     channel.relevant = true
                 end
             rescue => exception
-                return ({ :error => exception })
+                return ({ :error => exception.to_s })
             end
             channel
         end

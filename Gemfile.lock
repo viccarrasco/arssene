@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    arssene (0.1.0)
+    arssene (0.1.2)
       mechanize
       sanitize
 
