@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Vic Carrasco"]
   spec.email         = ["vic@viccarrasco.com"]
 
-  spec.summary       = "Gem for retrieving entries from RSS feeds"
+  spec.summary       = "Simple RSS solution for rails"
   spec.description   = "Gem for retrieving entries from RSS feeds given the URL of a feed or website"
   spec.homepage      = "https://github.com/viccarrasco/arssene"
   spec.license       = "MIT"
@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "https://github.com/viccarrasco/arssene"
+    spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
     spec.metadata["homepage_uri"] = spec.homepage
     spec.metadata["source_code_uri"] = "https://github.com/viccarrasco/arssene"
@@ -39,6 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "mechanize"
-  spec.add_development_dependency "sanitize"
+  spec.add_dependency "mechanize"
+  spec.add_dependency "sanitize"
 end
