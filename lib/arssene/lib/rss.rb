@@ -128,7 +128,7 @@ module Arssene
 
     def self.extract_items(feed)
       entries_presenter = Arssene::EntryPresenter.new
-      entries_presenter.as_entries(items: feed.items)
+      entries_presenter.as_entries(handler: Entry.new, items: feed.items)
     end
   end
 end

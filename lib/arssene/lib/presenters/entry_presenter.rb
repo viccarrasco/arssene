@@ -2,9 +2,9 @@
 
 module Arssene
   class EntryPresenter
-    def as_entries(items:)
+    def as_entries(handler:, items:)
       items.map do |item|
-        entry = Entry.new
+        entry = handler
         entry.title = item.title
         entry.link  = item.link
         entry.description = item.description
