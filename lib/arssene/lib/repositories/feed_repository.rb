@@ -3,35 +3,35 @@
 module Arssene
   class FeedRepository
     def initialize
-      @agent  = Mechanize.new
-      @pinged = []
+      @agent = Mechanize.new
     end
 
     def ping(uris:)
-      uris.is_a?(String) ? retrieve_feed_content(uris) : uris.each { |url| Thread.new { retrieve_feed_content(url, pinged: pinged) }.join }
+      if uris.is_a?(String)
+        retrieve_feed_urls(uris)
+      elsif uris.is_a?(Array)
+        uris.map { |uri| retrieve_feed_urls(uri).first }
+      end
     end
 
     def request(uris:)
-      raise 'Not Implemented'
+      if uris.is_a?(String)
+      end
     end
 
     private
 
-    def retrieve_feed_content(uri, pinged: [])
-      begin
-        feed_uris = embeded_html_source_links(uri)
-        if feed_uris.empty?
-          raise 'Non existing feeds'
-        else
-          pinged = feed_uris.map do |feed|
-            { feed: feed.attr('href').split.join }
-          end
-        end
-      rescue => e
-        pinged.push(error: e.to_s)
-      ensure
-        pinged
+    def retrieve_feed_urls(uri, pinged = [])
+      feed_uris = embeded_html_source_links(uri)
+      raise 'Non existing feeds' if feed_uris.empty?
+
+      pinged = feed_uris.map do |feed|
+        { feed: feed.attr('href').split.join }
       end
+    rescue StandardError => e
+      pinged.push(error: e.to_s)
+    ensure
+      pinged
     end
 
     def embeded_html_source_links(uri)
@@ -41,6 +41,5 @@ module Arssene
     end
 
     attr_reader :agent
-    attr_reader :pinged
   end
 end

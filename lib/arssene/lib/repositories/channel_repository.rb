@@ -4,7 +4,7 @@ module Arssene
   class ChannelRepository
     def fetch_as_channel(feed_url:)
       begin
-        channel = Channel.new
+        channel = Arssene::Channel.new
         open(feed_url) do |rss|
           feed = RSS::Parser.parse(rss)
           feed_url = URI.parse(feed.channel.link)
@@ -28,7 +28,8 @@ module Arssene
     end
 
     private
-    def self.extract_items(feed)
+
+    def extract_items(feed)
       entries_presenter = Arssene::EntryPresenter.new
       entries_presenter.as_entries(handler: Entry.new, items: feed.items)
     end

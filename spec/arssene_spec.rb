@@ -1,19 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Arssene do
-  # Has RSS
-
   describe '#ping' do
-    let!(:arssene) { Arssene::FeedInteraction.new }
-    subject { arssene.ping(url) }
+    subject { Arssene::Feed.ping(urls: url) }
 
     context 'when :urls is a string' do
       context 'when is successfull' do
         let(:url) { 'https://www.lifehacker.com' }
 
         it 'pings successfully and returns an array of feed urls' do
-          rss = subject
-          expect(rss.first).to eq(feed: 'https://lifehacker.com/rss')
+          expect(subject.first).to eq(feed: 'https://lifehacker.com/rss')
         end
       end
 
@@ -21,8 +17,7 @@ RSpec.describe Arssene do
         let(:url) { 'https://www.example.com' }
 
         it 'pings successfully and return array with error markers' do
-          rss = subject
-          expect(rss.first).to eq(error: 'Non existing feeds')
+          expect(subject.first).to eq(error: 'Non existing feeds')
         end
       end
 
@@ -33,40 +28,48 @@ RSpec.describe Arssene do
 
     context 'when :urls is an array' do
       context 'when is successfull' do
+        let(:url) { ['https://www.lifehacker.com', 'http://www.deadspin.com', 'https://www.kotaku.com'] }
+
         it 'returns an array of feeds' do
-          expect(true).to be(false)
+          expected_results = [
+            { feed: 'https://lifehacker.com/rss' },
+            { feed: 'https://deadspin.com/rss' },
+            { feed: 'https://kotaku.com/rss' }
+          ]
+          expect(subject).to eq(expected_results)
+        end
+      end
+
+      context 'when is at least one is not successfull' do
+        let(:url) { ['https://www.lifehacker.com', 'http://www.example.com', 'https://www.kotaku.com'] }
+
+        it 'returns an array of feeds' do
+          expected_results = [
+            { feed:  'https://lifehacker.com/rss' },
+            { error: 'Non existing feeds' },
+            { feed:  'https://kotaku.com/rss' }
+          ]
+          expect(subject).to eq(expected_results)
         end
       end
     end
   end
 
-  # it 'should ping successfully ' do
-  #   uri = 'http://www.lifehacker.com'
-  #   rss = Arssene::Feed.ping(uri)
-  #   expect(rss.nil?).to eq(false)
-  # end
+  describe '#request' do
+    subject { Arssene::Feed.request(urls: url, options: options) }
 
-  # # All Have rss
-  # it 'should ping successfully with an array of uris' do
-  #   uris = ['http://www.lifehacker.com', 'http://www.deadspin.com', 'https://www.kotaku.com'] # All have Rss
-  #   rss = Arssene::Feed.ping(uris)
-  #   expect(rss.length).to be > 0
-  # end
+    context 'when :urls is a string' do
+      let(:url) { 'https://lifehacker.com/rss' }
+      let(:options) { nil }
 
-  # # Doesn't have RSS
-  # it 'should ping successfully with an invalid uri or with no feed' do
-  #   uri = 'http://www.anime-town.com'
-  #   rss = Arssene::Feed.ping(uri)
-  #   expect(rss[0].has_key?(:error)).to eq true
-  # end
-
-  # # Has mixed websites that do and don't have rss
-  # it 'should ping successfully when an array of mixed valid/invalid uris sent' do
-  #   uris = ['http://www.lifehacker.com', 'http://www.anime-town.com']
-  #   rss = Arssene::Feed.ping(uris)
-  #   expect(rss[0][:feed]).to eq 'https://lifehacker.com/rss'
-  #   expect(rss[1].has_key?(:error)).to eq true
-  # end
+      it 'will return the contents of a feed' do
+        feed = subject
+        expect(feed.is_a?(Arssene::Channel)).to be(true)
+        expect(feed.title).to eq('Lifehacker')
+        expect(feed.entries.any?).to be(true)
+      end
+    end
+  end
 
   # # Has a valid rss
   # it 'should request successfully' do
@@ -97,7 +100,7 @@ RSpec.describe Arssene do
   #   uris = ['https://jezebel.com/rss', 'https://jalopnik.com/rss']
   #   rss = Arssene::Feed.request(uris)
   #   first_channel = rss[0]
-  #   expect(first_channel.entries.length).to be > 0
+  #   expect(first_channel.entrembeded_html_source_linksies.length).to be > 0
   # end
 
   # # Options (with :ignore clause)

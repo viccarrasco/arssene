@@ -11,6 +11,7 @@ module Arssene
         entry.publication_date = item.pubDate
         entry.author  = item.author
         entry.content = generate_content(item)
+        entry
       end
     end
 

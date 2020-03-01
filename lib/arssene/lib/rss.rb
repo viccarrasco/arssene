@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Arssene
-  class Feed
+  class FeedX
     def self.ping(uri)
       response = []
       begin
