@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
 require 'arssene/version'
-require 'arssene/lib/rss'
 require 'rss'
 require 'open-uri'
 require 'sanitize'
 require 'mechanize'
 require 'byebug'
 
-require 'arssene/lib/models/channel.rb'
-require 'arssene/lib/models/entry.rb'
+require 'arssene/lib/models/channel'
+require 'arssene/lib/models/entry'
 require 'arssene/lib/interactions/feed'
 require 'arssene/lib/interactions/ping'
 require 'arssene/lib/interactions/fetch'

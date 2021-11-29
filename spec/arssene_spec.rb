@@ -40,7 +40,7 @@ RSpec.describe Arssene do
         end
       end
 
-      context 'when is at least one is not successfull' do
+      context 'when at least one is not successfull' do
         let(:url) { ['https://www.lifehacker.com', 'http://www.example.com', 'https://www.kotaku.com'] }
 
         it 'returns an array of feeds' do
@@ -56,96 +56,120 @@ RSpec.describe Arssene do
   end
 
   describe '#request' do
-    subject { Arssene::Feed.request(urls: url, options: options) }
+    subject(:feed) { Arssene::Feed.request(urls: url) }
+
+    before { feed }
 
     context 'when :urls is a string' do
       let(:url) { 'https://lifehacker.com/rss' }
-      let(:options) { nil }
 
       it 'will return the contents of a feed' do
-        feed = subject
         expect(feed.is_a?(Arssene::Channel)).to be(true)
         expect(feed.title).to eq('Lifehacker')
         expect(feed.entries.any?).to be(true)
       end
+
+      context 'when unsuccessfull' do
+        let(:url) { 'https://example.com/rss' }
+
+        it 'will return an error' do
+          feed = subject
+          expect(feed.key?(:error)).to eq(true)
+        end
+      end
+    end
+
+    context 'when :urls is an array' do
+      let(:url) { ['https://jezebel.com/rss', 'https://jalopnik.com/rss'] }
+
+      it 'will return the contents of the feeds' do
+        feed = subject
+        expect(feed.is_a?(Array)).to be(true)
+        expect(feed.pop.title).to eq('Jalopnik')
+        expect(feed.pop.title).to eq('Jezebel')
+      end
+
+      context 'when unsuccessfull' do
+        let(:url) { ['https://jezebel.com/rss', 'https://example.com/rss'] }
+
+        it 'will have an error in the response' do
+          feed = subject
+          expect(feed.is_a?(Array)).to be(true)
+          expect(feed.pop.key?(:error)).to be(true)
+          expect(feed.pop.title).to eq('Jezebel')
+        end
+      end
+    end
+
+    describe 'options' do
+      context 'when filtering with :ignore' do
+        subject { Arssene::Feed.request(urls: url, ignore: options) }
+
+        let(:options) do
+          %w[comment comments
+             store corporate log advertising help support
+             subscribe account membership]
+        end
+
+        context 'when :urls is a string' do
+          let(:url) { 'https://lifehacker.com/rss' }
+
+          it 'filters out the irrelevant feeds' do
+            expect(subject.relevant).to eq(true)
+          end
+        end
+
+        context 'when :urls is an array' do
+          let(:url) { ['https://jezebel.com/rss', 'https://jalopnik.com/rss'] }
+
+          it 'filters out the irrelevant feeds' do
+            expect(subject.is_a?(Array)).to eq(true)
+            subject.each { |channel| expect(channel.relevant).to eq(true) }
+          end
+        end
+      end
+
+      context 'when filtering with :from_date' do
+        subject { Arssene::Feed.request(urls: url, from_date: DateTime.now - 2) }
+
+        context 'when :urls is a string' do
+          let(:url) { 'https://lifehacker.com/rss' }
+
+          it 'returns the last 2 days of feeds' do
+            expect(subject.entries.count).to be > 0
+          end
+        end
+
+        context 'when :urls is an array' do
+          let(:url) { ['https://jezebel.com/rss', 'https://jalopnik.com/rss'] }
+
+          it 'returns the last 2 days of feeds for multiple urls' do
+            expect(subject.is_a?(Array)).to eq(true)
+            subject.each { |channel| expect(channel.entries.count).to be > 0 }
+          end
+        end
+      end
+
+      context 'when filtering with :limit' do
+        subject { Arssene::Feed.request(urls: url, limit: 5) }
+
+        context 'when :urls is a string' do
+          let(:url) { 'https://lifehacker.com/rss' }
+
+          it 'returns just 5 feeds' do
+            expect(subject.entries.length).to eq(5)
+          end
+        end
+
+        context 'when :urls is an array' do
+          let(:url) { ['https://jezebel.com/rss', 'https://jalopnik.com/rss'] }
+
+          it 'returns just 5 feeds per channel' do
+            expect(subject.is_a?(Array)).to eq(true)
+            subject.each { |channel| expect(channel.entries.count).to eq(5) }
+          end
+        end
+      end
     end
   end
-
-  # # Has a valid rss
-  # it 'should request successfully' do
-  #   uri = 'https://www.lifehacker.com/rss'
-  #   rss = Arssene::Feed.request(uri)
-
-  #   expect(rss.has_key?(:error)).to eq false
-  #   expect(rss.entries.length).to be > 0
-  # end
-
-  # # Invalid site or no rss
-  # it 'should request successfully with an invalid uri' do
-  #   uri = 'http://www.anime-town.com'
-  #   rss = Arssene::Feed.request(uri)
-  #   expect(rss.has_key?(:error)).to eq true
-  # end
-
-  # # Mixed array of websites that do and don't have rss
-  # it 'should request successfully with a mixed array of valid/invalid uris' do
-  #   uris = ['https://anime-town.com/rss', 'https://jalopnik.com/rss']
-  #   rss = Arssene::Feed.request(uris)
-  #   expect(rss[0].has_key?(:error)).to eq true
-  #   expect(rss[1].has_key?(:channel)).to eq true
-  # end
-
-  # # Have valid rss
-  # it 'should request successfully with an array of uris' do
-  #   uris = ['https://jezebel.com/rss', 'https://jalopnik.com/rss']
-  #   rss = Arssene::Feed.request(uris)
-  #   first_channel = rss[0]
-  #   expect(first_channel.entrembeded_html_source_linksies.length).to be > 0
-  # end
-
-  # # Options (with :ignore clause)
-  # it 'should filter ignored websites' do
-  #   ignore = ['comment', 'comments', 'store', 'corporate', 'log', 'advertising', 'help', 'support', 'subscribe', 'account', 'membership']
-  #   uri = 'https://jalopnik.com/rss'
-  #   rss = Arssene::Feed.request(uri, ignore: ignore)
-  #   expect(rss[:channel].relevant).to eq true
-  # end
-
-  # it 'should filter ignored websites with an array of uris' do
-  #   ignore = ['comment', 'comments', 'store', 'corporate', 'log', 'advertising', 'help', 'support', 'subscribe', 'account', 'membership']
-  #   uris = ['https://jezebel.com/rss', 'https://jalopnik.com/rss']
-
-  #   rss = Arssene::Feed.request(uris, ignore: ignore)
-  #   expect(rss[0][:channel].relevant).to eq true
-  #   expect(rss[1][:channel].relevant).to eq true
-  # end
-
-  # it 'should bring last 2 days updates' do
-  #   last_days = DateTime.now - 2
-  #   uri = 'https://www.kotaku.com/rss'
-  #   rss = Arssene::Feed.request(uri, from_date: last_days)
-  #   expect(rss[:channel].entries.length).to be > 0
-  # end
-
-  # it 'should bring last 2 days of updates for an array of uris' do
-  #   last_days = DateTime.now - 2
-
-  #   uris = ['https://jezebel.com/rss', 'https://jalopnik.com/rss']
-  #   rss = Arssene::Feed.request(uris, from_date: last_days)
-  #   expect(rss[0][:channel].entries.length).to be > 0
-  #   expect(rss[1][:channel].entries.length).to be > 0
-  # end
-
-  # it 'should limit amount of entries to 5' do
-  #   uri = 'https://www.kotaku.com/rss'
-  #   rss = Arssene::Feed.request(uri, limit: 5)
-  #   expect(rss[:channel].entries.length).to eq(5)
-  # end
-
-  # it 'should limit amount of entries to 5 for an array of uris' do
-  #   uris = ['https://jezebel.com/rss', 'https://jalopnik.com/rss']
-  #   rss = Arssene::Feed.request(uris, limit: 5)
-  #   expect(rss[0][:channel].entries.length).to eq(5)
-  #   expect(rss[0][:channel].entries.length).to eq(5)
-  # end
 end

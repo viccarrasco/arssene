@@ -2,15 +2,15 @@
 
 module Arssene
   class ChannelRepository
-    def fetch_as_channel(feed_url:)
+    def fetch_as_channel(url)
       begin
         channel = Arssene::Channel.new
-        open(feed_url) do |rss|
+        open(url) do |rss|
           feed = RSS::Parser.parse(rss)
-          feed_url = URI.parse(feed.channel.link)
+          url = URI.parse(feed.channel.link)
           channel.title = feed.channel.title
           channel.link  = feed.channel.link
-          channel.host  = feed_url.host
+          channel.host  = url.host
           channel.feed_type = feed.feed_type
           channel.feed_version = feed.feed_version
           channel.description = feed.channel.description

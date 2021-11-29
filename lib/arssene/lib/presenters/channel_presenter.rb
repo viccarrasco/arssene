@@ -2,30 +2,54 @@
 
 module Arssene
   class ChannelPresenter
-    def filter(channel:, options: {})
-      return channel unless options.keys.any?
+    attr_accessor :channel
 
-      if options.key?(:ignore)
-        title = channel.title.downcase.split.join
-        ignore = options.fetch(:ignore)
-        ignore = ignore.is_a?(Array) ? ignore.join('|') : ignore
-        rxp = /.?(#{ignore}).?/
+    def initialize(channel)
+      @channel = channel
+    end
 
-        channel.relevant = (rxp.match(title) == false || rxp.match(title).nil?)
-      end
+    def filter(options)
+      return channel unless options
 
-      if options.key?(:from_date)
-        unless channel.entries.empty?
-          index = channel.entries.index { |entry| entry.publication_date == options[:from_date] }
-          channel.entries = index ? channel.entries.slice(0..index) : channel.entries
-        end
-      end
+      filter_by_ignore(options) if options[:ignore]
+      filter_by_date(options) if options[:from_date]
+      limit(options) if options[:limit]
 
-      if options.key?(:limit)
-        limit = (options[:limit] - 1)
-        channel.entries = channel.entries.slice(0..limit) if channel.entries.length > limit
-      end
       channel
+    end
+
+    private
+
+    def filter_by_ignore(options)
+      return if channel.entries.empty?
+
+      ignore_options = options[:ignore]
+
+      title = channel.title.downcase.split.join
+
+      ignored = ignore_options.is_a?(Array) ? ignore_options.join('|') : ignore_options
+      rxp = /.?(#{ignored}).?/
+
+      channel.relevant = (rxp.match(title) == false || rxp.match(title).nil?)
+    end
+
+    def filter_by_date(options)
+      return if channel.entries.empty?
+
+      from_date_option = options[:from_date]
+
+      index = channel.entries
+                     .index { |entry| entry.publication_date == from_date_option }
+
+      channel.entries.slice!(0..index) if index
+    end
+
+    def limit(options)
+      return if channel.entries.empty?
+
+      limit_quantity = options[:limit]
+
+      channel.entries = channel.entries.last(limit_quantity) if channel.entries.length > limit_quantity
     end
   end
 end

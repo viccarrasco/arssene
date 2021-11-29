@@ -2,11 +2,6 @@
 
 module Arssene
   class Entry
-    attr_accessor :title
-    attr_accessor :link
-    attr_accessor :description
-    attr_accessor :content
-    attr_accessor :publication_date
-    attr_accessor :author
+    attr_accessor :title, :link, :description, :content, :publication_date, :author
   end
 end

@@ -2,17 +2,7 @@
 
 module Arssene
   class Channel
-    attr_accessor :title
-    attr_accessor :link
-    attr_accessor :host
-    attr_accessor :feed_type
-    attr_accessor :feed_version
-    attr_accessor :description
-    attr_accessor :publication_date
-    attr_accessor :language
-    attr_accessor :copyright
-    attr_accessor :entries
-    attr_accessor :meta
-    attr_accessor :relevant
+    attr_accessor :title, :link, :host, :feed_type, :feed_version, :description, :publication_date, :language,
+                  :copyright, :entries, :meta, :relevant
   end
 end

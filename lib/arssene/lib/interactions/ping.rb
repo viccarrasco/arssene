@@ -6,17 +6,18 @@ module Arssene
       if urls.is_a?(String)
         retrieve_feed_urls(urls)
       elsif urls.is_a?(Array)
-        urls.map { |uri| retrieve_feed_urls(uri).first }
+        urls.map { |url| retrieve_feed_urls(url).first }
       end
     end
 
     private
 
-    def retrieve_feed_urls(uri, pinged = [])
-      feed_urls = embeded_html_source_links(uri)
-      raise 'Non existing feeds' if feed_urls.empty?
+    def retrieve_feed_urls(urls)
+      pinged = []
+      embeded_links = embeded_html_source_links(urls)
+      raise 'Non existing feeds' if embeded_links.empty?
 
-      pinged = feed_urls.map do |feed|
+      pinged = embeded_links.map do |feed|
         { feed: feed.attr('href').split.join }
       end
     rescue StandardError => e
@@ -25,10 +26,10 @@ module Arssene
       pinged
     end
 
-    def embeded_html_source_links(uri)
+    def embeded_html_source_links(url)
       agent = Mechanize.new
-      uri = URI.parse(uri)
-      site = agent.get(uri)
+      url = URI.parse(url)
+      site = agent.get(url)
       site.search(".//link[@type='application/rss+xml']")
     end
   end

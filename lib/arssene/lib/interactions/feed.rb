@@ -3,13 +3,11 @@
 module Arssene
   class Feed
     def self.ping(urls:)
-      ping = Arssene::Ping.new
-      ping.request(urls: urls)
+      Arssene::Ping.new.request(urls: urls)
     end
 
-    def self.request(urls:, options:)
-      fetch = Arssene::Fetch.new
-      fetch.request(urls: urls, options: options)
+    def self.request(urls:, **filters)
+      Arssene::Fetch.new.request(urls, **filters)
     end
   end
 end
