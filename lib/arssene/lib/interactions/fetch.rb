@@ -6,12 +6,12 @@ module Arssene
       @channel_repository = Arssene::ChannelRepository.new
     end
 
-    def request(urls:, **filters)
-      if urls.is_a?(String)
-        fetch_channel(urls, filters)
-      elsif urls.is_a?(Array)
-        urls.map { |url| fetch_channel(url, filters) }
-      end
+    def request(urls, **filters)
+      klass = urls.class
+
+      return fetch_channel(urls, filters) if klass == String
+
+      Parallel.map(urls) { |url| fetch_channel(url, filters) }
     end
 
     private
