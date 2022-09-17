@@ -72,7 +72,7 @@ puts rss
 # =>
 # [
 #     { feed: "https://lifehacker.com/rss" } ,
-#     { :error => 500 => Net::HTTPInternalServerError for http://www.anime-town.com/ }
+#     { error: 500 => Net::HTTPInternalServerError for http://www.anime-town.com/ }
 # ]
 ```
 
@@ -86,7 +86,7 @@ rss = Arssene::Feed.request(url)
 # =>
 # {
 #     feed: "https://www.lifehacker.com/rss",
-#     :channel => <Arssene::Channel:0x00007f0dbc011500>
+#     channel: <Arssene::Channel:0x00007f0dbc011500>
 # }
 
 # Where if your feed is rss[:channel], you could:
