@@ -2,10 +2,10 @@
 
 require 'arssene/version'
 require 'rss'
-require 'open-uri'
-require 'sanitize'
+require 'faraday'
 require 'mechanize'
-require 'byebug'
+require 'parallel'
+require 'sanitize'
 
 require 'arssene/lib/models/channel'
 require 'arssene/lib/models/entry'
