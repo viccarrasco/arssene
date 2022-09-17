@@ -1,6 +1,6 @@
 # Arssene
 
-Simple RSS solution for rails. 
+Simple RSS solution for rails.
 
 ## Installation
 
@@ -21,6 +21,7 @@ Or install it yourself as:
 ## Usage
 
 ### Ping a website
+
 To obtain the rss feed of a website, first you should ping the website.
 
 ```ruby
@@ -28,20 +29,20 @@ url = "https://www.theonion.com/"
 rss = Arssene::Feed.ping(url)
 
 puts rss
-# => [ {:feed => "https://www.theonion.com/rss"} ]
+# => [ { feed: "https://www.theonion.com/rss"} ]
 ```
 
-You can also send an array of urls, but keep in mind performance, as each website will be pinged individually.
+You can also send an array of urls.
 
 ```ruby
 urls = ["http://www.lifehacker.com", "http://www.deadspin.com", "https://www.kotaku.com"]
 rss = Arssene::Feed.ping(urls)
 puts rss
-# => 
-#   [ 
-#     { :feed => "https://www.lifehacker.com/rss" }, 
-#     { :feed => "http://www.deadspin.com/rss" }, 
-#     { :feed => "http://www.kotaku.com/rss"} 
+# =>
+#   [
+#     { feed: "https://www.lifehacker.com/rss" },
+#     { feed: "http://www.deadspin.com/rss" },
+#     { feed: "http://www.kotaku.com/rss"}
 #   ]
 
 ```
@@ -70,7 +71,7 @@ puts rss
 
 # =>
 # [
-#     { :feed => "https://lifehacker.com/rss" } ,
+#     { feed: "https://lifehacker.com/rss" } ,
 #     { :error => 500 => Net::HTTPInternalServerError for http://www.anime-town.com/ }
 # ]
 ```
@@ -82,9 +83,9 @@ Once you have the correct URL for the feed, you can request the website's feed. 
 ```ruby
 url = "https://www.lifehacker.com/rss"
 rss = Arssene::Feed.request(url)
-# => 
+# =>
 # {
-#     :feed => "https://www.lifehacker.com/rss",
+#     feed: "https://www.lifehacker.com/rss",
 #     :channel => <Arssene::Channel:0x00007f0dbc011500>
 # }
 
@@ -98,7 +99,7 @@ puts rss.link
 # => https://www.lifehacker.com
 
 puts rss.feed_type
-# => rss 
+# => rss
 
 puts rss.feed_version
 # => 2.0
@@ -118,22 +119,25 @@ puts rss.entries[0] # Array of type Entry
     # link: https://theinventory.com/ravpower-struck-a-61-watt-blow-in-the-usb-c-gan-wars-1834586407
     # description: <p> Description in html </p>
     # publication_date: 2019-05-13 16:15:00.000000000 +00:00
-    # author: 
-    # content: 
+    # author:
+    # content:
 ```
 
 ## Options
+
 You can send an additional parameter to the request method with a hash of options to filter the response of the feed.
 
 ### :ignore parameter
+
 If you'd like to filter feeds that include the following words in the title, you can by doing the following:
 
 ```ruby
 ignore = ["comment", "comments", "store", "corporate"]
 
 url = "https://ignore-feed-website.com/rss"
-rss = Arssene::Feed.request(url, { :ignore => ignore })
+rss = Arssene::Feed.request(url, { ignore: ignore })
 ```
+
 If Arssene finds that the feed is not relevant according to your parameters it will result in a change the 'relevant' property to false. Otherwise, by default all feeds return true for the 'relevant' property.
 
 ```ruby
@@ -144,6 +148,7 @@ puts feed.relevant
 ```
 
 ### :from_date parameter
+
 You can specify the date from which you'd like to include entries. The :from_date parameter does NOT include the entries of the date sent.
 
 ```ruby
@@ -151,22 +156,24 @@ last_days = DateTime.now - 2
 # => 2019-05-12T15:45:49+02:00
 
 url = "https://www.kotaku.com/rss"
-rss = Arssene::Feed.request(url, { :from_date => last_days })
+rss = Arssene::Feed.request(url, { from_date: last_days })
 ```
+
 Entries will include only from the date specifed all the way up to the newest. If you'd like to include the day you need, you can send an aditional day to the :from_date parmeter.
 
 ### :limit parameter
+
 You can also specify a limit of entries that you'd like to receive for a given result.
 
 ```ruby
 url = "https://www.kotaku.com/rss"
-rss = Arssene::Feed.request(url, { :limit => 5 })
+rss = Arssene::Feed.request(url, { limit: 5 })
 
 feed = rss[:channel]
 
 # Should be the latest 5
 puts feed.entries.length
-# => 5 
+# => 5
 ```
 
 You can also combine any of the three specified parameters to suit your request.
