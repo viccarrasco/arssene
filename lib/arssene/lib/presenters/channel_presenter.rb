@@ -12,8 +12,8 @@ module Arssene
       return channel unless options
 
       filter_by_ignore(options) if options[:ignore]
-      filter_by_date(options) if options[:from_date]
-      limit(options) if options[:limit]
+      filter_by_date(options)   if options[:from_date]
+      limit(options)            if options[:limit]
 
       channel
     end
