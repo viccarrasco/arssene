@@ -2,7 +2,7 @@
 
 RSpec.describe Arssene do
   describe '#ping' do
-    subject { Arssene::Feed.ping(urls: url) }
+    subject { Arssene::Feed.ping(url) }
 
     context 'when :urls is a string' do
       context 'when is successfull' do
@@ -56,7 +56,7 @@ RSpec.describe Arssene do
   end
 
   describe '#request' do
-    subject(:feed) { Arssene::Feed.request(urls: url) }
+    subject(:feed) { Arssene::Feed.request(url) }
 
     before { feed }
 
@@ -103,7 +103,7 @@ RSpec.describe Arssene do
 
     describe 'options' do
       context 'when filtering with :ignore' do
-        subject { Arssene::Feed.request(urls: url, ignore: options) }
+        subject { Arssene::Feed.request(url, ignore: options) }
 
         let(:options) do
           %w[comment comments
@@ -130,13 +130,13 @@ RSpec.describe Arssene do
       end
 
       context 'when filtering with :from_date' do
-        subject { Arssene::Feed.request(urls: url, from_date: DateTime.now - 2) }
+        subject { Arssene::Feed.request(url, from_date: DateTime.now - 2) }
 
         context 'when :urls is a string' do
           let(:url) { 'https://lifehacker.com/rss' }
 
           it 'returns the last 2 days of feeds' do
-            expect(subject.entries.count).to be > 0
+            expect(subject.entries.count.positive?).to be_truthy
           end
         end
 
@@ -145,13 +145,13 @@ RSpec.describe Arssene do
 
           it 'returns the last 2 days of feeds for multiple urls' do
             expect(subject.is_a?(Array)).to eq(true)
-            subject.each { |channel| expect(channel.entries.count).to be > 0 }
+            subject.each { |channel| expect(channel.entries.count.positive?).to be_truthy }
           end
         end
       end
 
       context 'when filtering with :limit' do
-        subject { Arssene::Feed.request(urls: url, limit: 5) }
+        subject { Arssene::Feed.request(url, limit: 5) }
 
         context 'when :urls is a string' do
           let(:url) { 'https://lifehacker.com/rss' }
