@@ -16,7 +16,7 @@ module Arssene
 
     private
 
-    def fetch_channel(urls, **filters)
+    def fetch_channel(urls, filters)
       feed = channel_repository
              .fetch_as_channel(urls)
 

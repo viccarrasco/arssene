@@ -5,6 +5,7 @@ PATH
       faraday
       mechanize
       parallel
+      rss
       sanitize
 
 GEM
@@ -59,6 +60,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-support (3.11.1)
+    rss (0.2.8)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     sanitize (6.0.0)

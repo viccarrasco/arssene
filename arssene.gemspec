@@ -41,5 +41,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday'
   spec.add_dependency 'mechanize'
   spec.add_dependency 'parallel'
+  spec.add_dependency 'rss'
   spec.add_dependency 'sanitize'
 end
