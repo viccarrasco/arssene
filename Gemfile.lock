@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    arssene (0.1.6)
+    arssene (0.1.7)
       faraday
       mechanize
       parallel
