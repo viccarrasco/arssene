@@ -35,7 +35,7 @@ module Arssene
 
     def extract_items(feed)
       entries_presenter = Arssene::EntryPresenter.new
-      entries_presenter.as_entries(handler: Entry.new, items: feed.items)
+      entries_presenter.as_entries(handler: Entry, items: feed.items)
     end
   end
 end
