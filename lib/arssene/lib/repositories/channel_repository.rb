@@ -5,6 +5,7 @@ module Arssene
     def fetch_as_channel(url)
       begin
         channel = Arssene::Channel.new
+        rss_link = url.dup
 
         response = Faraday.get(url)
         raise "Unable to reach feed: #{url} | error corde: #{response.status}" unless response.status == 200
@@ -23,6 +24,7 @@ module Arssene
         channel.entries = extract_items feed
         channel.meta = feed
         channel.relevant = true
+        channel.rss_link = rss_link
       rescue StandardError => e
         return ({ error: e.to_s })
       end

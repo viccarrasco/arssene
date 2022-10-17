@@ -3,6 +3,6 @@
 module Arssene
   class Channel
     attr_accessor :title, :link, :host, :feed_type, :feed_version, :description, :publication_date, :language,
-                  :copyright, :entries, :meta, :relevant
+                  :copyright, :entries, :meta, :relevant, :rss_link
   end
 end
