@@ -2,7 +2,6 @@
 
 require 'arssene/version'
 require 'rss'
-require 'faraday'
 require 'mechanize'
 require 'parallel'
 require 'sanitize'
