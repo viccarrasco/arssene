@@ -6,7 +6,7 @@ module Arssene
       items.map do |item|
         entry = handler.new
         entry.title = item.title
-        entry.link  = item.link
+        entry.link  = item.link || item&.enclosure&.url
         entry.description = item.description
         entry.publication_date = item.pubDate
         entry.author  = item.author
