@@ -37,7 +37,7 @@ GEM
     net-http-digest_auth (1.4.1)
     net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
-    nokogiri (1.13.8-arm64-darwin)
+    nokogiri (1.13.9-x86_64-linux)
       racc (~> 1.4)
     parallel (1.21.0)
     public_suffix (5.0.0)
@@ -68,7 +68,7 @@ GEM
     webrobots (0.1.2)
 
 PLATFORMS
-  ruby
+  x86_64-linux
 
 DEPENDENCIES
   arssene!
